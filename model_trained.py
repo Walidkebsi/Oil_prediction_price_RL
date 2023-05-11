@@ -5,32 +5,20 @@ Created on Wed May 10 18:18:35 2023
 
 @author: walidkebsi
 """
-
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-from sklearn.linear_model import LinearRegression, Lasso, Ridge
-from sklearn.model_selection import train_test_split, cross_val_score, learning_curve
-from sklearn.preprocessing import StandardScaler, LabelEncoder, MinMaxScaler
-from sklearn.pipeline import Pipeline, make_pipeline
-from sklearn.compose import TransformedTargetRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.svm import SVR
-#------Création d'une classe Log1p Transformer pour ajouter une méthode get_param
-from sklearn.base import BaseEstimator, TransformerMixin
-import numpy as np
 import pandas as pd
 from joblib import dump
+import numpy as np
+from sklearn.linear_model import LinearRegression, Lasso, Ridge
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVR
 
 oil_data = pd.read_csv("oil.csv", index_col='Date', parse_dates=True)
 
 #-----------Modèle de prédiction régression linéaire-------------------------------
-
-
-# Valeur Nan normal because the rolling begins after 30 days. 
+# Nan values normal because the rolling begins after 30 days. 
 # Method :use the ewm
-
 oil_data= oil_data.rename(columns={'Close/Last' : 'Close'})
 oil_data['volatility'] = oil_data['Close'].ewm(alpha=0.6).std()
 
@@ -40,15 +28,19 @@ oil_data = oil_data.dropna(axis=0, how='any')
 mean_volatility = oil_data['volatility'].mean()
 oil_data['volatility'].fillna(mean_volatility, inplace=True)
 oil_data = oil_data[oil_data['Close'] >= 0] #on supprime prix négatif
+
 # Check data
 print('Valeurs NaN : \n', oil_data.isnull().sum()) #check ok no NaN datas 
+
 #Data training 
 y = oil_data['Close']
 X = oil_data.drop(['Close', 'Volume', 'High', 'Low'], axis=1)
 #prédiction en fontion de la volatilité observé et du price d'ouverture de la session
+
 # Encode categorical variables - no needed - only numeric data
+
 # Normalization 
-#Normalization 
+
 # if outlier : must use RobustScaler
 # Define pipelines for data preprocessing
 preprocessor_linear = Pipeline([('scaler', MinMaxScaler())])
