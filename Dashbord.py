@@ -5,12 +5,30 @@ Created on Fri May  5 14:55:04 2023
 
 @author: walidkebsi
 """
+#Import section 
 from dash import Dash 
 from dash import dcc
 from dash import html
 import pandas as pd
-#---------------------------CREATION DU FICHIER VIDE PY------------------------------------
 import os
+import numpy as np
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output, State
+from sklearn.linear_model import LinearRegression
+import plotly.graph_objs as go
+from joblib import load
+import numpy as np
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+from dash.dependencies import Input, Output, State
+from sklearn.linear_model import LinearRegression
+import plotly.graph_objs as go
+from joblib import load
+
+#---------------------------CREATION DU FICHIER VIDE PY------------------------------------
   
 # Specify the path
 path = '/Users/walidkebsi/Downloads/pyready_trader_go 3'
@@ -38,28 +56,8 @@ print(dir_list)
 #---------------------------CREATION DU FICHIER VIDE PY------------------------------------
 
 #---------------------------MAIN ALGO - DASHBORD --------------------------------------------
+
 oil_data = pd.read_csv("oil.csv", index_col='Date', parse_dates=True)
-
-#-----------Modèle de prédiction régression linéaire-------------------------------
-
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-from sklearn.linear_model import LinearRegression, Lasso, Ridge
-from sklearn.model_selection import train_test_split, cross_val_score, learning_curve
-from sklearn.preprocessing import StandardScaler, LabelEncoder, MinMaxScaler
-from sklearn.pipeline import Pipeline, make_pipeline
-from sklearn.compose import TransformedTargetRegressor
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.svm import SVR
-#------Création d'une classe Log1p Transformer pour ajouter une méthode get_param
-from sklearn.base import BaseEstimator, TransformerMixin
-import numpy as np
-
-# Valeur Nan normal because the rolling begins after 30 days. 
-# Method :use the ewm
-
 oil_data= oil_data.rename(columns={'Close/Last' : 'Close'})
 oil_data['volatility'] = oil_data['Close'].ewm(alpha=0.6).std()
 
@@ -73,18 +71,7 @@ oil_data = oil_data[oil_data['Close'] >= 0] #on supprime prix négatif
 
 #---------------------------MAIN ALGO - DASHBORD --------------------------------------------
 
-import numpy as np
-import dash
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output, State
-from sklearn.linear_model import LinearRegression
-import plotly.graph_objs as go
-from joblib import load
-
-
 reg_loaded = load('regression_model_saved.joblib')
-
 
 app = Dash(__name__)
 
@@ -141,7 +128,7 @@ def prediction_price(n_clicks, volatility, Open):
     [State('input_volatility', 'value'),
      State('input_Open', 'value')]
      
-     
+
     
 )
    
@@ -155,6 +142,6 @@ def update_output(n_clicks, volatility, Open):
     
     
     #---------------------------MAIN ALGO - DASHBORD --------------------------------------------
-
+#Launch server
 if __name__ == "__main__":
     app.run_server(debug=True)
